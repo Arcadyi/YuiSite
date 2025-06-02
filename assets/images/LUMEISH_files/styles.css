@@ -1,0 +1,182 @@
+body {
+  margin: 1rem;
+  padding: 2rem;
+  background: #cccec7;
+  color: #2e2622;
+  font-family: "Jiskan12";
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+@font-face {
+    font-family: 'Jiskan16';
+    src: url('../fonts/JF-Dot-jiskan16.ttf');
+}
+@font-face {
+    font-family: 'Jiskan12';
+    src: url('../fonts/JF-Dot-K12.ttf');
+}
+.title {
+  margin-bottom: -5rem;
+    font-size: 5rem;
+}
+
+.iso-grid {
+  position: relative;
+  height: 800px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+  margin: 0 auto;
+  cursor: grab;
+}
+.iso-grid::-webkit-scrollbar {
+  display: none;
+}
+
+/* When the panel is open, shift the grid left by half the panel width plus half the gap */
+.container.panel-open .iso-grid {
+  transform: translateY(-10px); /* Remove or comment out this line */
+}
+
+.tile {
+  --tile-size: 192px;
+  position: absolute;
+  width: var(--tile-size);
+  height: var(--tile-size);
+  /* Center the isometric grid inside .iso-grid */
+  left: 50%;
+  top: 50%;
+  /* Use dynamic math for isometric grid */
+  transform:
+    translate(
+      calc((var(--x) - var(--y)) * (var(--tile-size) / 2)),
+      calc((var(--x) + var(--y)) * (var(--tile-size) / 4))
+    )
+    translate(-50%, -50%);
+  transition: transform 0.2s, filter 0.3s;
+  cursor: pointer;
+}
+
+.tile img {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.tile .overlay {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  padding: 0.5rem;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.tile:hover,
+.tile.selected {
+  transform:
+    translate(
+      calc((var(--x) - var(--y)) * (var(--tile-size) / 2)),
+      calc((var(--x) + var(--y)) * (var(--tile-size) / 4) - 40px)
+    )
+    translate(-50%, -50%)
+    scale(1.00);
+}
+
+.tile:hover .overlay {
+  opacity: 1;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;      /* Stack children vertically */
+  align-items: center;         /* Center horizontally */
+  justify-content: flex-start;
+  gap: 2rem;
+  width: auto;                 /* Remove fixed width */
+  max-width: 100vw;
+  margin: 0 auto;
+  transition: gap 0.6s cubic-bezier(0.4,0,0.2,1), margin 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+.container.panel-open {
+  gap: 2rem; /* Add space between grid and panel when open */
+}
+
+.info-panel {
+  position: static;            /* Remove absolute positioning */
+  width: 700px;                /* Or a value that fits your design */
+  min-height: 200px;
+  background: #a09f97;
+  color: #2e2622;
+  padding: 2rem 2.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1);
+  display: block;
+  margin-top: -10.0rem;            /* Less space from the grid */
+  font-size: 1.5rem;
+}
+
+.info-panel.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tile.selected {
+  z-index: 9999;
+  /* Only the selected tile gets the "pop up" and scale effect */
+  transform:
+    translate(
+      calc((var(--x) - var(--y)) * (var(--tile-size) / 2)),
+      calc((var(--x) + var(--y)) * (var(--tile-size) / 4) - 40px)
+    )
+    translate(-50%, -50%)
+    scale(1.10); /* or whatever scale you want */
+}
+
+/* Dim tiles only when a tile is selected */
+.container.panel-open .tile {
+  filter: brightness(0.6);
+  transition: filter 0.3s;
+}
+
+.container.panel-open .tile.selected {
+  filter: brightness(1);
+}
+
+/* Remove transform from .tile:hover (optional, for clarity) */
+
+.tile,
+.tile.selected {
+  transition: 
+    transform 0.6s cubic-bezier(0.4,0,0.2,1),
+    filter 0.6s cubic-bezier(0.4,0,0.2,1),
+    z-index 0s;
+}
+
+.info-panel,
+.info-panel.visible {
+  transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+.iso-grid.dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.tile,
+.iso-grid {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
